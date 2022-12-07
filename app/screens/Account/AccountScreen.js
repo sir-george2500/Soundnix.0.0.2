@@ -5,10 +5,17 @@ import ListItem from '../../components/AccountScreenComponent.js/ListItem'
 import Icon from '../../components/Icon'
 import ListItemSeparator from '../../components/ListItemSeperator'
 import { useNavigation } from '@react-navigation/native'
-import routes from '../../../navigation/routes'
+import routes from '../../../navigation/routes';
+import { getAuth } from "../../api/firebase";
 
+import { useContext } from 'react'
+import { AuthContext } from '../../../auth/AuthProvider'
+
+const auth = getAuth;
 export default function AccountScreen() {
   const navigation = useNavigation();
+
+  const{logOut } = useContext(AuthContext)
 
   const movetoProfileScreen=()=>{
     return navigation.navigate(routes.PROFILE)
@@ -48,7 +55,7 @@ export default function AccountScreen() {
        <ListItem 
        IconComponent={<Icon name="logout"/>}
        title="Log Out"
-       onPress={()=>console.log("")}
+       onPress={()=>logOut(auth)}
       />
 
       </View>

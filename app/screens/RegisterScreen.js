@@ -42,7 +42,7 @@ const [Loading,setLoading] = useState(false);
    
 
 
-    const auth = getAuth();
+    const auth = getAuth(app);
 
     try{
 createUserWithEmailAndPassword(auth, email, password)

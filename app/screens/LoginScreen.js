@@ -7,21 +7,22 @@ import AppFormField from '../components/forms/AppFormField';
 import SubmitButton from '../components/forms/SubmitButton';
 import AppForm from '../components/forms/AppForm';
 import { ScrollView } from 'react-native';
-import { auth } from '../api/firebase';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import AppButton from '../components/AppButton';
 import AppText from '../components/AppText';
 import colors from '../config/colors';
 import ErrorMessage from '../components/forms/ErrorMessage';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Constants from "expo-constants";
-
+import { useContext } from 'react';
+import { AuthContext } from '../../auth/AuthProvider';
+import { getAuth} from '../api/firebase'
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required().email().label("Email"),
     password: Yup.string().required().min(4).label("Password"),
   });
-function RegisterScreen(props) {
+function LoginScreen(props) {
+  const {login} = useContext(AuthContext)
 
 const [submitted,setSumbitted] = useState(false)
 const [modalVisible,setModalVisible] = useState(false);
@@ -30,67 +31,24 @@ const [displayError,setdisplayError] = useState('Error');
 const [Loading,setLoading] = useState(false);
 
 
-  const handleSubmit = async (values,{resetForm}) => {
+  const handleSubmit = (values,{resetForm}) => {
     // This function received the values from the form
     // The line below extract the two fields from the values object.
-    setLoading(true);
+
     const { email, password } = values;
-    var body = {
-      password: password,
-      email: email
-    };
-
-
-    const auth = getAuth();
-
-    try{
-signInWithEmailAndPassword(auth, email, password)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-
-    console.log(user);
-   //reset the form and set the modal visible to true with will allow the modal to pup up
-   resetForm();
    
-   setModalVisible(true);
-   setSumbitted(false);
-    // ...
-    setLoading(false);
-  })
-  .catch((error) => {
-    //call the loader for me
-    setLoading(false);
-    //disable the submit
-    setSumbitted(true)
-    // the modal for me
-    setisError(true);
-    const errorCode = error.code;
-    const errorMessage = error.message;
+    const auth = getAuth;
 
-    switch (errorCode){
-      case 'auth/wrong-password':
-        setdisplayError('Wrong Email or Password \n Please try again');
-        break
-      case 'auth/too-many-requests':
-        setdisplayError('Too many Attempts your Account is disable pls try \n again');
-        break
+    try {
+      
+      login(auth,email,password);
+    } catch (error) {
+      console.log("Hey George ", error)
     }
-    
-    setSumbitted(false)
-    console.log(isError);
-    console.log(errorMessage);
-    // ..
-  })}catch(err){
-    console.log("Oops on un expected Error :", err)
-  };
-    
-    // auth.createUserWithEmailAndPassword(email, password)
-    //   .then(userDetails => {
-    //     // const user = userDetails;
-    //     // console.log(user.email);
-    //   }).catch(e => console.log(e));
 
+    resetForm();
+ 
+    
   }
   return (
   <>
@@ -200,4 +158,4 @@ const styles = StyleSheet.create({
 
 
 
-export default RegisterScreen;
+export default LoginScreen;
