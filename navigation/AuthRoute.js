@@ -6,6 +6,9 @@ import {AuthContext} from '../auth/AuthProvider'
 import { getAuth} from '../app/api/firebase'
 import * as auth from 'firebase/auth';
 import React, { useContext, useState ,useEffect} from 'react'
+import { Provider } from 'react-redux';
+import { store } from '../app/appState/store';
+
 
 const AuthRoute = () => {
     const {user,setUser} = useContext(AuthContext);
@@ -28,7 +31,13 @@ const AuthRoute = () => {
   
     return (
      <NavigationContainer>
-      {user ? <AppNavigator /> : <AuthNavigator />}
+      {
+      user
+       ?    
+         <AppNavigator /> 
+         :   
+         <AuthNavigator />
+          }   
      </NavigationContainer>
     )
   }

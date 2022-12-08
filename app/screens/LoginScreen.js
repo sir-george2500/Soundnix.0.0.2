@@ -16,13 +16,16 @@ import Constants from "expo-constants";
 import { useContext } from 'react';
 import { AuthContext } from '../../auth/AuthProvider';
 import { getAuth} from '../api/firebase'
+import { useSelector } from 'react-redux';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required().email().label("Email"),
     password: Yup.string().required().min(4).label("Password"),
   });
 function LoginScreen(props) {
-  const {login} = useContext(AuthContext)
+  const {login} = useContext(AuthContext);
+ const checkLogin = useSelector((state)=>state.login[state.login.length-1].LOGIN)
+ const getError = useSelector((state)=>state.login[state.login.length-1].ERROR)
 
 const [submitted,setSumbitted] = useState(false)
 const [modalVisible,setModalVisible] = useState(false);
@@ -39,12 +42,22 @@ const [Loading,setLoading] = useState(false);
    
     const auth = getAuth;
 
-    try {
+   
       
       login(auth,email,password);
-    } catch (error) {
-      console.log("Hey George ", error)
-    }
+
+      if (checkLogin==false){
+        switch(getError){
+          case 'auth/too-many-requests' :
+            return setisError('Too many request');
+            case 'auth/wrong-password':
+            return setisError('Wrong password');
+        }
+        setModalVisible(true);
+        
+        console.log(getError,"Hii ");
+      }
+    
 
     resetForm();
  
@@ -98,18 +111,6 @@ const [Loading,setLoading] = useState(false);
    <SubmitButton title="Login" disable={submitted} />
        </View>
     </AppForm>
-    <Modal visible={modalVisible} animationType="slide">
-    <View   style={styles.ViewModalStyle}>
-      <AppText style={{color:colors.green}}>Registration Successful</AppText>
-      <AppButton  
-      title="Close" 
-      color='green' 
-      textColor="white" 
-      elevation={10} 
-      borderColor="green"
-      onPress={()=>setModalVisible(false)}/>
-    </View>
-    </Modal>
     
     <Modal visible={isError} animationType="slide">
     <View   style={styles.ViewModalStyle}>
