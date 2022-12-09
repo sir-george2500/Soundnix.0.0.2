@@ -1,41 +1,20 @@
-import { getAuth,signInWithEmailAndPassword ,signOut} from "firebase/auth";
+import {signOut} from "firebase/auth";
 import React ,{createContext,useState} from 'react';
- import { useDispatch } from "react-redux";
- import { Provider } from 'react-redux';
-import { checkLogin } from "../app/appState/Login/LoginSlice";
-import { store } from '../app/appState/store';
-
+import { login } from "../app/appState/Login/LoginSlice";
 
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
   const [user, setUser] = useState(null);
-   const dispatch = useDispatch();
+ 
 
   return (
-  
    <AuthContext.Provider 
    value={{
     user,
     setUser,
-    login:async (auth,email,password)=>{
-     try {
-        console.log("Authicating")
-       await signInWithEmailAndPassword(auth,email,password);
-       console.log("Authicated");
-     } catch (error) {
-       dispatch(
-         checkLogin({
-          LOGIN:false,
-          ERROR:error.code,
-         })
-       )
-       console.log(error);
-
-     }  
-    },
-
+    Login:(auth,email,password)=>login(auth ,email,password),
     logOut:async(auth)=>{
       try {
         await signOut(auth);
@@ -46,9 +25,7 @@ export const AuthProvider = ({children}) => {
 
    }}
    >
-    
     {children}
-    
    </AuthContext.Provider>
   )
 }

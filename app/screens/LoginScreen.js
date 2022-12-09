@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, Image, KeyboardAvoidingView, Modal, SafeAreaView } from 'react-native';
-
 import Screen from '../components/Screen';
 import * as Yup from 'yup'
 import AppFormField from '../components/forms/AppFormField';
@@ -8,24 +7,25 @@ import SubmitButton from '../components/forms/SubmitButton';
 import AppForm from '../components/forms/AppForm';
 import { ScrollView } from 'react-native';
 import AppButton from '../components/AppButton';
+import { signInWithEmailAndPassword ,signOut} from "firebase/auth";
 import AppText from '../components/AppText';
 import colors from '../config/colors';
 import ErrorMessage from '../components/forms/ErrorMessage';
 import ActivityIndicator from '../components/ActivityIndicator';
 import Constants from "expo-constants";
-import { useContext } from 'react';
-import { AuthContext } from '../../auth/AuthProvider';
+
 import { getAuth} from '../api/firebase'
 import { useSelector } from 'react-redux';
+
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().required().email().label("Email"),
     password: Yup.string().required().min(4).label("Password"),
   });
 function LoginScreen(props) {
-  const {login} = useContext(AuthContext);
- const checkLogin = useSelector((state)=>state.login[state.login.length-1].LOGIN)
- const getError = useSelector((state)=>state.login[state.login.length-1].ERROR)
+
+//  const checkLogin = useSelector((state)=>state.login[state.login.length-1].LOGIN)
+//  const getError = useSelector((state)=>state.login[state.login.length-1].ERROR)
 
 const [submitted,setSumbitted] = useState(false)
 const [modalVisible,setModalVisible] = useState(false);
@@ -34,32 +34,44 @@ const [displayError,setdisplayError] = useState('Error');
 const [Loading,setLoading] = useState(false);
 
 
-  const handleSubmit = (values,{resetForm}) => {
+  const handleSubmit = async (values,{resetForm}) => {
     // This function received the values from the form
     // The line below extract the two fields from the values object.
-
+    setLoading(true);
     const { email, password } = values;
    
     const auth = getAuth;
-
    
-      
-      login(auth,email,password);
-
-      if (checkLogin==false){
-        switch(getError){
-          case 'auth/too-many-requests' :
-            return setisError('Too many request');
-            case 'auth/wrong-password':
-            return setisError('Wrong password');
-        }
-        setModalVisible(true);
-        
-        console.log(getError,"Hii ");
-      }
+ 
+   try {
+     
+       await signInWithEmailAndPassword(auth,email,password);
+       setLoading(false);
+   } catch (error) {
     
+    setLoading(false);
+    //disable the submit
+    setSumbitted(true)
+    // the modal for me
+    setisError(true);
+    const errorCode = error.code;
+    const errorMessage = error.message;
 
-    resetForm();
+    switch (errorCode){
+      case 'auth/wrong-password':
+        setdisplayError('Sorry the password is wrong');
+        setSumbitted(false)
+        resetForm();
+        break
+    }
+    
+    
+      
+   }  
+    
+    
+     
+    return resetForm();
  
     
   }
