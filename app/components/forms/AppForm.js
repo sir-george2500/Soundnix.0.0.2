@@ -1,7 +1,11 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
 
+/**
+ * This is the AppForm Module which Wrap Formik 
+ * form.
+ * @param {*} param0 
+ * @returns 
+ */
 function AppForm({initialValues,onSubmit,validationSchema ,children}) {
     return (
       <Formik
@@ -18,8 +22,6 @@ function AppForm({initialValues,onSubmit,validationSchema ,children}) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {}
-});
+
 
 export default AppForm;
