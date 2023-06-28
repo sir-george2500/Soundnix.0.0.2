@@ -1,10 +1,21 @@
+import React from 'react';
+import {StyleSheet} from 'react-native';
+import AppText from '../AppText';
+
 function ErrorMessage({ error , touch }) {
 
     if (!touch||!error) return null
     return (
-        <p className='text-red mb-2'>{error}</p>
+        <AppText style={styles.error}>{error}</AppText>
   );
 }
 
+const styles = StyleSheet.create({
+    container: {},
+    error: {
+        color:"red",
+    }
+    
+});
 
 export default ErrorMessage;
